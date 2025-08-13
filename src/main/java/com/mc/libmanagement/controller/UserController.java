@@ -62,7 +62,7 @@ public class UserController {
     public String addUser(User user,Model model){
         // 我们是不是用了 mybatis-plus 组件 + mybatisX 插件生成了代码，QueryWrapper 是 MybatisPlus 提供的查询条件封装类
         // 创建一个查询条件封装类的对象
-        QueryWrapper queryWrapper = new QueryWrapper<>();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         // 查询数据库中 num = 填入的工号 的 记录
         queryWrapper.eq("username", user.getUsername());
         // getOne() 方法是在数据库中查询一条记录

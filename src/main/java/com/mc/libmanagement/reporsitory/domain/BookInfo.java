@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 图书信息
@@ -57,8 +58,9 @@ public class BookInfo implements Serializable {
     private Double price;
 
     /**
-     * 
+     * DateTimeFormat注解是 日期格式化的注解
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date pubDate;
 
     /**

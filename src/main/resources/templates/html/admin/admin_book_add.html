@@ -154,6 +154,7 @@
                 <!--main-->
                 <div id="header"></div>
                 <div class="col-xs-6 col-md-offset-3" style="padding-top: 50px;position: relative">
+<!--                    点击添加按钮后，执行的action是 /book/addBook(id=${user.id}) -->
                     <form th:action="@{/book/addBook(id=${user.id})}" method="post">
                         <div class="panel panel-primary" style="border-color: #5ccdde;">
                             <div class="panel-heading" style="background-color: #5ccdde;border-color: #5ccdde;">
