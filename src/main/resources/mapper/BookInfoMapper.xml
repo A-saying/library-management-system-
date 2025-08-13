@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mc.libmanagement.reporsitory.mapper.BookInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.mc.libmanagement.reporsitory.domain.BookInfo">
+            <id property="bookId" column="book_id" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="author" column="author" jdbcType="VARCHAR"/>
+            <result property="publish" column="publish" jdbcType="VARCHAR"/>
+            <result property="isbn" column="isbn" jdbcType="VARCHAR"/>
+            <result property="introduction" column="introduction" jdbcType="VARCHAR"/>
+            <result property="language" column="language" jdbcType="VARCHAR"/>
+            <result property="price" column="price" jdbcType="DOUBLE"/>
+            <result property="pubDate" column="pub_date" jdbcType="DATE"/>
+            <result property="classId" column="class_id" jdbcType="INTEGER"/>
+            <result property="number" column="number" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        book_id,name,author,
+        publish,isbn,introduction,
+        language,price,pub_date,
+        class_id,number
+    </sql>
+</mapper>
