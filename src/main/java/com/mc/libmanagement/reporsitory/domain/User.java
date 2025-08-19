@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 
@@ -42,8 +43,9 @@ public class User implements Serializable {
     private String sex;
 
     /**
-     * 
+     * DateTimeFormat注解是 日期格式化的注解
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birth;
 
     /**

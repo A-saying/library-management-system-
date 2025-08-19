@@ -42,6 +42,7 @@
                 <div class="sidebar-content">
                     <!-- Sidebar Navigation -->
                     <ul class="sidebar-nav">
+<!--                        ${xxx} 获取model中 xxx 的值。如 ${user.id} 就是获取model中的user对象的id的值    href = xxx 表示链接，点击会跳转到对应的链接请求-->
                         <li>
                             <a th:href="@{/index(id=${user.id})}"><i class="gi gi-compass sidebar-nav-icon"></i><span class="sidebar-nav-mini-hide">首页</span></a>
                         </li>
@@ -101,7 +102,8 @@
         </div>
         <!-- END Main Sidebar -->
 
-        <!-- Main Container -->
+        <!-- Main Container 是系统的主界面展示的内容 -->
+        <!--  看看主容器中有哪些 ${}      -->
         <div id="main-container">
 
             <header class="navbar navbar-inverse navbar-fixed-top">

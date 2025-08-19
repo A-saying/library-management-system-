@@ -21,7 +21,6 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 // 添加不拦截路径
                 .excludePathPatterns("/login", "/logout", "/static/**", "/toLogin",
-                        "/index",
                         "/login.html",
                         "/");
     }

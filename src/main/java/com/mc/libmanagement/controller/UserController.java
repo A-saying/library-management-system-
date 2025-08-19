@@ -1,6 +1,7 @@
 package com.mc.libmanagement.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mc.libmanagement.reporsitory.domain.User;
 import com.mc.libmanagement.reporsitory.service.UserService;
 import org.springframework.stereotype.Controller;
@@ -16,107 +17,193 @@ import javax.annotation.Resource;
  **/
 @Controller  // 告诉Spring(框架)这是一个处理HTTP请求的类
 //@RestController  //  ==  @ResponseBody + @Controller 等于这两个注解的合集
+@RequestMapping("/user")
 public class UserController {
 
     @Resource  // 自动绑定
     private UserService userService;
 
-    @GetMapping("/get/user")
-    @ResponseBody
-    public User getUser(@RequestParam("idddd") Integer idhhh) {
-        User user = userService.getById(idhhh);
-        return user;
+    //个人信息查询
+    @RequestMapping({"/me"})
+    public String me(int id, Model model) {
+        User user = userService.getById(id);
+        model.addAttribute("user", user);
+        return "html/reader/reader_info";
     }
 
-    /**
-     * 删除用户
-     * @param id
-     * @return
-     *
-     * @RequestParam("id")  注解  在请求对象中获取 名字是 “id” 的参数， 更方便，更简单
-     *
-     */
-    @GetMapping("/delete/user")
-    @ResponseBody // 注解，告诉Spring 这是一个返回字符串的请求处理方法
-    public String deleteUser(@RequestParam("id") Integer id) {
-        // 根据用户id 删除用户
-        boolean flag = userService.removeById(id);
-        if (flag) {
-            return "删除成功";
+    //带参数跳转至个人信息修改页面
+    @RequestMapping({"/toUpdate"})
+    public String toUpdate(int id, Model model) {
+        User user = userService.getById(id);
+        model.addAttribute("user", user);
+        return "html/reader/reader_info_edit";
+    }
+
+    //个人信息修改
+    @PostMapping({"/update"})
+    public String update(User u, Model model) {
+        // 根据id去更新数据库中的记录
+        this.userService.updateById(u);
+        // 再根据id 获取修改后的用户信息
+        User user = this.userService.getById(u.getId());
+        // 把修改后的用户信息保存到model中
+        model.addAttribute("user", user);
+        return "html/reader/reader_info";
+    }
+
+    //带id跳转至修改密码页面
+    @RequestMapping("/toPwd")
+    public String toPwd(int id, Model model) {
+        User user = userService.getById(id);
+        model.addAttribute("user", user);
+        if (user.getFlag() == 0) {
+            return "html/admin/repassword";
         } else {
-            return "删除失败";
+            return "html/reader/reader_repasswd";
         }
     }
 
+    //密码修改
+    @PostMapping("/rePwd")
+    public String rePwd(int id, String oldPasswd, String newPasswd, String reNewPasswd, Model model) {
+        User user = userService.getById(id);
+        model.addAttribute("user", user);
+        // 判断旧密码是否正确
+        if (user.getPassword().equals(oldPasswd)) {
+            // 判断两次输入的新密码是否一致
+            if (newPasswd.equals(reNewPasswd)) {
+                user.setPassword(newPasswd);
+                userService.updateById(user);
+                model.addAttribute("msg", "密码修改成功，请重新登录！");
+                return "forward:/";
+            } else {
+                model.addAttribute("msg", "提示:两次输入的新密码不同，请检查！");
+                if (user.getFlag() == 0) {
+                    return "html/admin/repassword";
+                } else {
+                    return "html/reader/reader_repasswd";
+                }
+            }
+        } else {
+            model.addAttribute("msg", "提示:旧密码输入错误，请重试！");
+            if (user.getFlag() == 0) {
+                return "html/admin/repassword";
+            } else {
+                return "html/reader/reader_repasswd";
+            }
+        }
+    }
 
+    //跳转到添加用户界面
     @RequestMapping("/toAddUser")
-    public String toAddUser(Model model) {
-        User user1 = new User();                  // 创建新用户对象（空表单）
-        model.addAttribute("user1", user1);       // 添加空用户对象到模型
-        return "html/admin/admin_user_add_1";       // 返回视图模板
+    public String toAddUser(int id, Model model) {
+        User user = userService.getById(id);
+        model.addAttribute("user", user);
+        User user1 = new User();
+        model.addAttribute("user1", user1);
+        return "html/admin/admin_user_add";
     }
 
     //添加用户
-    @ResponseBody
-    @PostMapping("/addUser")
-    public String addUser(User user,Model model){
-        // 我们是不是用了 mybatis-plus 组件 + mybatisX 插件生成了代码，QueryWrapper 是 MybatisPlus 提供的查询条件封装类
-        // 创建一个查询条件封装类的对象
+    @RequestMapping("/addUser")
+    public String addUser(int uid, User user, Model model) {
+        User user1 = userService.getById(uid);
+        model.addAttribute("user", user1);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        // 查询数据库中 num = 填入的工号 的 记录
         queryWrapper.eq("username", user.getUsername());
-        // getOne() 方法是在数据库中查询一条记录
         User one = userService.getOne(queryWrapper);
-        if (one == null){
-            // one == null 表示 数据库中没有对应num的用户
+        if (one == null) {
             userService.save(user);
             User user2 = new User();
-            model.addAttribute("user1",user2);
-            model.addAttribute("msg","提示:添加成功！");
-            return "添加成功";
+            model.addAttribute("user1", user2);
+            model.addAttribute("msg", "提示:添加成功！");
         } else {
-            model.addAttribute("user1",user);
-            model.addAttribute("msg","提示:工号重复,添加失败！");
-            return  "工号重复,添加失败！";
+            model.addAttribute("user1", user);
+            model.addAttribute("msg", "提示:用户名重复,添加失败！");
         }
+        return "html/admin/admin_user_add";
     }
 
+    //查询所有用户
+    @RequestMapping("/selectAll")
+    public String selectAll(int uid, int current, Model model) {
+        User user = userService.getById(uid);
+        model.addAttribute("user", user);
 
+        Page<User> page = new Page<>(current, 5);
+        userService.page(page, null);
 
+        model.addAttribute("page", page);
+        model.addAttribute("x", 0);
 
+        return "html/admin/admin_user";
+    }
+
+    //条件查询用户
+    @RequestMapping("/selectSome")
+    public String selectSome(int id, int current, int flag, String name, Model model) {
+        User user = userService.getById(id);
+        model.addAttribute("user", user);
+        model.addAttribute("flag", flag);
+        model.addAttribute("name", name);
+
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        if (flag != 2) {
+            queryWrapper.eq("flag", flag);
+        }
+        if (!name.isEmpty()) {
+            queryWrapper.eq("name", name);
+        }
+        Page<User> page = new Page<>(current, 5);
+        userService.page(page, queryWrapper);
+
+        model.addAttribute("page", page);
+        model.addAttribute("x", 1);
+
+        return "html/admin/admin_user";
+    }
+
+    //跳转到用户修改页面
     @RequestMapping("/toUpdateUser")
-    public String toAddUser(int id, Model model) {
-        User user = userService.getById(id); // 根据用户id 获取用户
-        model.addAttribute("user1", user);     // 添加用户对象到模型
-        return "html/admin/admin_user_update_1";       // 返回视图模板
+    public String toUpdateUser(int uid, int id, int current, Model model) {
+        User user = userService.getById(id);
+        model.addAttribute("user", user);
+        model.addAttribute("current", current);
+        User user1 = userService.getById(uid);
+        model.addAttribute("user1", user1);
+        return "html/admin/admin_user_edit";
     }
 
-    //添加用户
-    @ResponseBody
-    @PostMapping("/updateUser")
-    public String updateUser(User user,Model model){
-        // 我们是不是用了 mybatis-plus 组件 + mybatisX 插件生成了代码，QueryWrapper 是 MybatisPlus 提供的查询条件封装类
-        // 创建一个查询条件封装类的对象
-        QueryWrapper queryWrapper = new QueryWrapper<>();
-        // 查询数据库中 num = 填入的工号 的 记录
-        queryWrapper.eq("username", user.getUsername());
-        // getOne() 方法是在数据库中查询一条记录
-        User one = userService.getOne(queryWrapper);
-        if (one == null){
-            return "更新失败，该用户不存在，请确认工号填写是否正确";
-        } else {
-            // 用户不为空，说明用户存在，没问题，可以进行更新
-            // 获取记录中的id
-            int id = one.getId();
-            // 在数据库中更新用户
-            user.setId(id);
-            // 根据id更新用户
+    //修改用户
+    @RequestMapping("/updateUser")
+    public String updateUser(int uid, int current, User user, Model model) {
+        if (uid != user.getId()) {
             userService.updateById(user);
-            return "更新成功";
+        } else {
+            model.addAttribute("msg", "提示:不能修改自己！");
         }
+
+        model.addAttribute("uid", uid);
+        model.addAttribute("current", current);
+
+        return "forward:/user/selectAll";
     }
 
+    //删除用户
+    @RequestMapping("deleteUser")
+    public String deleteUser(int uid, int id, int current, Model model) {
+        model.addAttribute("id", id);
+        model.addAttribute("current", current);
 
+        if (id != uid) {
+            userService.removeById(uid);
+            model.addAttribute("msg", "提示:删除成功！");
+        } else {
+            model.addAttribute("msg", "提示:不能删除自己！");
+        }
+
+        return "forward:/user/selectAll";
+    }
 
 
 }
