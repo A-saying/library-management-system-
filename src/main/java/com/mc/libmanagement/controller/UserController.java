@@ -126,6 +126,7 @@ public class UserController {
 
     //查询所有用户
     @RequestMapping("/selectAll")
+    //  参数 uid current 会自动从model中匹配 key是 uid、current的值
     public String selectAll(int uid, int current, Model model) {
         User user = userService.getById(uid);
         model.addAttribute("user", user);
@@ -164,12 +165,21 @@ public class UserController {
     }
 
     //跳转到用户修改页面
+
+    /**
+     * 点击 编辑 按钮，跳转到编辑页面
+     * @param uid
+     * @param id
+     * @param current
+     * @param model
+     * @return
+     */
     @RequestMapping("/toUpdateUser")
     public String toUpdateUser(int uid, int id, int current, Model model) {
-        User user = userService.getById(id);
+        User user = userService.getById(uid);
         model.addAttribute("user", user);
         model.addAttribute("current", current);
-        User user1 = userService.getById(uid);
+        User user1 = userService.getById(id);
         model.addAttribute("user1", user1);
         return "html/admin/admin_user_edit";
     }
@@ -190,13 +200,16 @@ public class UserController {
     }
 
     //删除用户
-    @RequestMapping("deleteUser")
+    @RequestMapping("/deleteUser")
     public String deleteUser(int uid, int id, int current, Model model) {
-        model.addAttribute("id", id);
+        // model.addAttribute("uid", 2);
+        // uid = 2
+        model.addAttribute("uid", uid);
+        // current = 1
         model.addAttribute("current", current);
 
         if (id != uid) {
-            userService.removeById(uid);
+            userService.removeById(id);
             model.addAttribute("msg", "提示:删除成功！");
         } else {
             model.addAttribute("msg", "提示:不能删除自己！");

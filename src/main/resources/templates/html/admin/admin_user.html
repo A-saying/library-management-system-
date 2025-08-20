@@ -213,8 +213,8 @@
                                     <td th:text="${user1.phone}"></td>
                                     <td th:if="${user1.flag==0}" th:text="管理员"></td>
                                     <td th:if="${user1.flag==1}" th:text="读者"></td>
-                                    <td><a th:href="@{/user/toUpdateUser(id=${user.id},uid=${user1.id},current=${page.current})}"><button type="button" class="btn btn-info btn-xs">编辑</button></a></td>
-                                    <td><a th:href="@{/user/deleteUser(id=${user.id},uid=${user1.id},current=${page.current})}"><button type="button" class="btn btn-danger btn-xs" onclick="return shanchu()">删除</button></a></td>
+                                    <td><a th:href="@{/user/toUpdateUser(uid=${user.id},id=${user1.id},current=${page.current})}"><button type="button" class="btn btn-info btn-xs">编辑</button></a></td>
+                                    <td><a th:href="@{/user/deleteUser(uid=${user.id},id=${user1.id},current=${page.current})}"><button type="button" class="btn btn-danger btn-xs" onclick="return shanchu()">删除</button></a></td>
                                 </tr>
                             </tbody>
                         </table>

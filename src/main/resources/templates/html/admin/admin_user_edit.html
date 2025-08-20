@@ -159,6 +159,7 @@
                             <h3 class="panel-title">编辑用户信息</h3>
                         </div>
                         <div class="panel-body">
+<!--                             ${} 去获取model中的值-->
                             <form th:action="@{/user/updateUser(uid=${user.id},current=${current})}" method="post" id="useredit" >
                                 <input type="hidden" name="id" th:value="${user1.id}">
                                 <div class="input-group">

@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,6 +45,12 @@ public class BookController {
      */
 
 
+    /**
+     * List<xxx>  List 是一个列表，功能和数组类似，是存储一组数据的
+     * getById(id) 是通过表的主键进行查询，返回的数据就仅有一条或者没有
+     * list() 方法是查询所有数据
+     */
+
     @Resource
     private BookInfoService bookInfoService;
     @Resource
@@ -53,6 +60,7 @@ public class BookController {
 
     /**
      * 对图书的操作 管理员 和 读者 跳转的页面不一样
+     *
      */
 
     //分页查询全部
