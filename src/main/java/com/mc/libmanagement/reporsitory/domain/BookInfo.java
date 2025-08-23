@@ -48,7 +48,7 @@ public class BookInfo implements Serializable {
     private String introduction;
 
     /**
-     * 
+     *
      */
     private String language;
 
@@ -59,6 +59,7 @@ public class BookInfo implements Serializable {
 
     /**
      * DateTimeFormat注解是 日期格式化的注解
+     * 将字符串格式的日期字符串转换成Date对象
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date pubDate;

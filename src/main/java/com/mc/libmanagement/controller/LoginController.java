@@ -23,51 +23,6 @@ public class LoginController {
     @Resource // 告诉Spring(框架) 自动去对象池中捞取UserService类的对象，注入到LoginController 类中
     private UserService userService;
 
-    //
-    // 多文本注释 多选 ctrl + /
-//
-//    // 写一个跳转登录页面的方法
-//    @RequestMapping("/toLogin")
-//    public String toLogin() {
-//        return "login";
-//    }
-//
-//
-//    @ResponseBody
-//    @PostMapping("/login")
-//    public String login(User user, Model model, HttpSession session) {
-//        if (user == null || user.getUsername() == null || user.getPassword() == null || user.getFlag() == null) {
-//            return "用户信息缺失，登录失败";
-//        }
-//        // 登录界面输入的信息
-//        String num = user.getUsername();
-//        String password = user.getPassword();
-//        Integer role = user.getFlag();
-//
-//        // 创建一个查询条件封装类的对象
-//        QueryWrapper queryWrapper = new QueryWrapper<>();
-//        // 查询数据库中 num = 填入的工号 的 记录
-//        queryWrapper.eq("username", num);
-//        // getOne() 方法是在数据库中查询一条记录
-//        User existUser = userService.getOne(queryWrapper);
-//        // 1. 判断这个人是否真实存在
-//        if (existUser == null) {
-//            return "用户不存在，登录失败";
-//        }
-//        // 2. 判断密码是否正确
-//        if (!existUser.getPassword().equals(password)) {
-//            return "密码错误，登录失败";
-//        }
-//        // 3. 判断角色是否正确
-//        if (!existUser.getFlag().equals(role)) {
-//            return "角色错误，登录失败";
-//        }
-//        // 4. 登录成功，将用户信息保存到 session 中,作为身份腰牌
-//        session.setAttribute("user", existUser);
-//        // 登录成功
-//        return "登录成功";
-//    }
-
     @ResponseBody
     @RequestMapping("/logout")
     public String logout(HttpSession session) {

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mc.libmanagement.reporsitory.mapper.LendListMapper">
+
+    <resultMap id="BaseResultMap" type="com.mc.libmanagement.reporsitory.domain.LendList">
+        <id property="serNum" column="ser_num" jdbcType="INTEGER"/>
+        <result property="bookId" column="book_id" jdbcType="INTEGER"/>
+        <result property="readerId" column="reader_id" jdbcType="INTEGER"/>
+        <result property="lendDate" column="lend_date" jdbcType="DATE"/>
+        <result property="backDate" column="back_date" jdbcType="DATE"/>
+        <result property="flag" column="flag" jdbcType="INTEGER"/>
+        <result property="lossFlag" column="loss_flag" jdbcType="INTEGER"/>
+        <result property="lossDate" column="loss_date" jdbcType="DATE"/>
+        <result property="payDate" column="pay_date" jdbcType="DATE"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ser_num
+        ,book_id,reader_id,
+        lend_date,back_date,flag,
+        loss_flag,loss_date,pay_date
+    </sql>
+
+    <resultMap id="LendList" type="com.mc.libmanagement.reporsitory.domain.LendList">
+        <id column="ser_num" property="serNum"/>
+        <result column="book_id" property="bookId"/>
+        <result column="reader_id" property="readerId"/>
+        <result column="lend_date" property="lendDate"/>
+        <result column="back_date" property="backDate"/>
+        <result column="flag" property="flag"/>
+        <result column="loss_flag" property="lossFlag"/>
+        <result column="loss_date" property="lossDate"/>
+        <result column="pay_date" property="payDate"/>
+        <collection property="bookInfo" ofType="com.mc.libmanagement.reporsitory.domain.BookInfo">
+            <id column="book_id" property="bookId"/>
+            <result column="name" property="name"/>
+            <result column="author" property="author"/>
+            <result column="publish" property="publish"/>
+            <result column="isbn" property="isbn"/>
+            <result column="introduction" property="introduction"/>
+            <result column="language" property="language"/>
+            <result column="price" property="price"/>
+            <result column="pub_date" property="pubDate"/>
+            <result column="class_id" property="classId"/>
+            <result column="number" property="number"/>
+        </collection>
+    </resultMap>
+    <update id="update1">
+        update lend_list
+        set loss_flag=1,
+            loss_date=#{date}
+        where ser_num = #{serNum}
+    </update>
+    <update id="update2">
+        update lend_list
+        set loss_flag=0,
+            loss_date=null
+        where ser_num = #{serNum}
+    </update>
+    <update id="update3">
+        update lend_list
+        set flag=1,
+            loss_flag=2,
+            pay_date=#{date},
+            back_date=#{date}
+        where ser_num = #{serNum}
+    </update>
+    <update id="update4">
+        update lend_list
+        set flag=1,
+            loss_flag=0,
+            back_date=#{date}
+        where ser_num = #{serNum}
+    </update>
+    <update id="updateDate">
+        update lend_list
+        set back_date=#{date1}
+        where ser_num = #{serNum}
+    </update>
+    <update id="updateFlag">
+        update lend_list
+        set flag=2
+        where ser_num = #{serNum}
+    </update>
+    <update id="updateFlag2">
+        update lend_list
+        set flag=0
+        where ser_num = #{serNum}
+    </update>
+    <update id="updateOne">
+        update lend_list
+        set flag=3
+        where ser_num = #{serNum}
+    </update>
+    <select id="selectByReader" resultMap="LendList">
+-- SQL 语句
+-- select 字段列表 from 表名
+-- where 条件
+-- order by 排序字段
+-- limit 0,10
+        select *
+        from lend_list,
+             book_info
+        where lend_list.book_id = book_info.book_id
+          and reader_id = #{id}
+          and flag != 1 and loss_flag != 2
+    </select>
+    <select id="selectByReader2" resultMap="LendList">
+        select *
+        from lend_list,
+             book_info
+        where lend_list.book_id = book_info.book_id
+          and reader_id = #{id}
+          and (flag = 1 or loss_flag = 2)
+    </select>
+    <select id="selectByReader3" resultMap="LendList">
+        select *
+        from lend_list,
+             book_info
+        where lend_list.book_id = book_info.book_id
+          and reader_id = #{id}
+          and flag != 1 and loss_flag = 1
+    </select>
+    <select id="getDate" resultType="java.util.Date">
+        select back_date
+        from lend_list
+        where ser_num = #{serNum}
+    </select>
+    <select id="select1" resultMap="LendList">
+        select *
+        from lend_list,
+             book_info
+        where lend_list.book_id = book_info.book_id
+    </select>
+    <select id="select2" resultMap="LendList">
+        select *
+        from lend_list,
+             book_info
+        where lend_list.book_id = book_info.book_id
+          and lend_list.flag = #{x}
+    </select>
+    <select id="select3" resultMap="LendList">
+        select *
+        from lend_list,
+             book_info
+        where lend_list.book_id = book_info.book_id
+          and book_info.name = #{y}
+    </select>
+    <select id="select4" resultMap="LendList">
+        select *
+        from lend_list,
+             book_info
+        where lend_list.book_id = book_info.book_id
+          and lend_list.flag = #{x}
+          and book_info.name = #{y}
+    </select>
+</mapper>
