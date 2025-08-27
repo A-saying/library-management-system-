@@ -18,6 +18,11 @@ public interface LendListMapper extends BaseMapper<LendList> {
 
     List<LendList> selectByReader(int id);
 
+    /**
+     * 查询指定读者id所有已还/已赔偿的图书借阅记录
+     * @param id
+     * @return
+     */
     List<LendList> selectByReader2(int id);
 
     void update1(int serNum, Date date);

@@ -53,6 +53,8 @@ public class LendController {
     @Resource
     private UserService userService;
 
+    Date date = new Date();
+
     //查询当前用户的借阅记录（读者登录）
     @RequestMapping("/selectSome")
     public String selectSome(int id, int current, Model model) {
@@ -142,25 +144,31 @@ public class LendController {
         User user = userService.getById(id);
         model.addAttribute("user", user);
 
+        // 根据用户id进行查询，返回所有已还、已赔偿的图书借阅信息
         List<LendList> lendList = lendListService.selectByReader2(id);
 
+        // 创建分页对象
         Page<LendList> page = new Page<>(current, 5);
         //总数据数
         int count = lendList.size();
         //总页数
         int pages = count % 5 == 0 ? count / 5 : count / 5 + 1;
         //让页码保持在合理范围
-        if (current == 0) {
-            current++;
+        if (current <= 0) {
+            current = 1;
         }
         if (current > pages) {
-            current--;
+            current = pages;
         }
-        //计算当前页第一条数据的下标
-        int currId = current > 1 ? (current - 1) * 5 : 0;
+        //计算当前页第一条数据的下标, 最小是从0开始
+        // 为什么是从0开始？因为计算机都是二进制 0/1  一个字节：0、1， 两个字节：00、01、10、11
+        int currId = (current - 1) * 5;
 
+        // 创建一个List,作为当前页返回结果的集合
         List<LendList> pageList = new ArrayList<>();
+        // i < count - currId 是为了防止最后一页数据获取时，越界
         for (int i = 0; i < 5 && i < count - currId; i++) {
+            // lendList.get(i) 获取lendList中下标为i的数据
             pageList.add(lendList.get(currId + i));
         }
         page.setSize(5);
@@ -174,28 +182,73 @@ public class LendController {
         return "html/reader/reader_lend_list";
     }
 
-    //删除借还信息
+    /**
+     * 删除借阅记录
+     * @param serNum 借阅记录的编号
+     * @param id 登录的用户id
+     * @param current 当前页码
+     * @param model 模型对象
+     * @return 删除后，刷新页面（执行/lend/selectAll方法 然后跳转方法的页面）
+     */
     @RequestMapping("/deleteOne")
     public String deleteOne(int serNum, int id, int current, Model model) {
+        // serNum是主键，可以使用removeById(serNum) 删除借阅记录
         lendListService.removeById(serNum);
         User user = userService.getById(id);
+        // 模型对象中添加用户id和当前页码
         model.addAttribute("id", user.getId());
         model.addAttribute("current", current);
+        // 转发到查询所有已还书的方法
         return "forward:/lend/selectAll";
     }
 
-    //图书借阅
+
+    /**
+     * 借阅图书 ==》 添加借阅记录
+     * @param id 登录的用户id
+     * @param bookId 图书的编号
+     * @param current 当前页码
+     * @param classId 图书的分类编号
+     * @param flag 用户的角色 1 读者 0 管理员
+     * @param name 图书名称
+     * @param model 模型对象
+     * @return
+     */
     @RequestMapping("/addOne")
     public String addOne(int id, int bookId, int current, int classId, int flag, String name, Model model) {
-        //获取当前系统时间
+
+        // 更新图书存量
+        BookInfo book = bookInfoService.getById(bookId);
+        if (book.getNumber() <= 0) {
+            User user = userService.getById(id);
+            model.addAttribute("user", user);
+            model.addAttribute("msg", "库存不足！");
+            if (flag == 0) {
+                return "html/admin/admin_books";
+            } else {
+                return "html/reader/reader_books";
+            }
+        }
+        // 库存数量减1
+        int number = book.getNumber() - 1;
+        // 重新设置库存数量为 新的库存数量
+        book.setNumber(number);
+        // 更新到数据库
+        bookInfoService.updateById(book);
+
+
+        // 获取当前系统时间
         Date date1 = new Date();
+        // 日历类，用来操作时间
+        // Calendar.getInstance() 创建一个日历对象
         Calendar calendar = Calendar.getInstance();
+        // 设置当前时间
         calendar.setTime(date1);
-        //修改为30天后
+        //修改为30天后, 在当前日期的基础上加30天，用来设置归还日期
         calendar.add(Calendar.DAY_OF_MONTH, 30);
         Date date2 = calendar.getTime();
 
-        //添加一条借阅信息
+        //构建一条借阅信息
         LendList lendList = new LendList();
         lendList.setBookId(bookId);
         lendList.setReaderId(id);
@@ -203,15 +256,10 @@ public class LendController {
         lendList.setBackDate(date2);
         lendList.setFlag(0);
         lendList.setLossFlag(0);
+        // 保存到数据库中
         lendListService.save(lendList);
 
-        //更新图书存量
-        BookInfo book = bookInfoService.getById(bookId);
-        int number = book.getNumber() - 1;
-        book.setNumber(number);
-        bookInfoService.updateById(book);
-
-
+        // 根据用户的角色，去跳转不同的页面
         if (flag == 0) {
             System.out.println(classId);
             System.out.println(name);
@@ -227,12 +275,19 @@ public class LendController {
         }
     }
 
-    //图书挂失页面
+    /**
+     * 跳转到 挂失图书 的页面
+     * @param id
+     * @param current
+     * @param model
+     * @return
+     */
     @RequestMapping("/toUpdateOne")
     public String toUpdateOne(int id, int current, Model model) {
         User user = userService.getById(id);
         model.addAttribute("user", user);
 
+        // 找到 未还并且未赔偿
         List<LendList> lendList = lendListService.selectByReader(id);
 
         Page<LendList> page = new Page<>(current, 5);
@@ -241,27 +296,29 @@ public class LendController {
         //总页数
         int pages = count % 5 == 0 ? count / 5 : count / 5 + 1;
         //让页码保持在合理范围
-        if (current == 0) {
-            current++;
+        if (current <= 0) {
+            current = 1;
         }
         if (current > pages) {
-            current--;
+            current = pages;
         }
         //计算当前页第一条数据的下标
-        int currId = current > 1 ? (current - 1) * 5 : 0;
+        int currId = (current - 1) * 5;
 
         List<LendList> pageList = new ArrayList<>();
 
-        Date date1 = new Date();
+        Date now = new Date();
         for (int i = 0; i < 5 && i < count - currId; i++) {
-            Date date2 = lendList.get(currId + i).getBackDate();
-            if (date1.compareTo(date2) == 1) {
+            Date backDate = lendList.get(currId + i).getBackDate();
+            if (now.compareTo(backDate) == 1) {
                 if (lendList.get(currId + i).getFlag() == 0) {
+                    // 超期未还的 需要更新状态为 超期 2
                     lendListService.updateFlag(lendList.get(currId + i).getSerNum());
                 }
             }
-            if (date1.compareTo(date2) < 1) {
+            if (now.compareTo(backDate) < 1) {
                 if (lendList.get(currId + i).getFlag() == 2) {
+                    // 未超期，但是状态为超期的需要将状态设置为 未还 0  ==> 超期后又续借了
                     lendListService.updateFlag2(lendList.get(currId + i).getSerNum());
                 }
             }
@@ -279,7 +336,9 @@ public class LendController {
         return "html/reader/reader_guashi_books";
     }
 
-    //图书挂失操作
+    /**
+     * 图书挂失操作
+     */
     @RequestMapping("/updateOne")
     public String updateOne(int id, int current, int serNum, Model model) {
         model.addAttribute("current", current);
@@ -289,7 +348,10 @@ public class LendController {
         return "forward:/lend/toUpdateOne";
     }
 
-    //图书解挂页面
+    /***
+     * 图书解挂页面
+     *
+     */
     @RequestMapping("/toUpdateTwo")
     public String toUpdateTwo(int id, int current, Model model) {
         User user = userService.getById(id);
@@ -303,14 +365,14 @@ public class LendController {
         //总页数
         int pages = count % 5 == 0 ? count / 5 : count / 5 + 1;
         //让页码保持在合理范围
-        if (current == 0) {
-            current++;
+        if (current <= 0) {
+            current = 0;
         }
         if (current > pages) {
-            current--;
+            current = pages;
         }
         //计算当前页第一条数据的下标
-        int currId = current > 1 ? (current - 1) * 5 : 0;
+        int currId = (current - 1) * 5;
 
         List<LendList> pageList = new ArrayList<>();
         for (int i = 0; i < 5 && i < count - currId; i++) {
@@ -327,7 +389,9 @@ public class LendController {
         return "html/reader/reader_jiegua_books";
     }
 
-    //图书解挂操作
+    /**
+     *  图书解挂操作
+     */
     @RequestMapping("/updateTwo")
     public String updateTwo(int id, int current, int serNum, Model model) {
         model.addAttribute("current", current);
@@ -337,14 +401,22 @@ public class LendController {
         return "forward:/lend/toUpdateTwo";
     }
 
-    //图书赔偿操作
+    /**
+     * 图书赔偿操作
+     * @param id
+     * @param current
+     * @param serNum
+     * @param bookId
+     * @param model
+     * @return
+     */
     @RequestMapping("/updateThree")
     public String updateThree(int id, int current, int serNum, int bookId, Model model) {
         model.addAttribute("current", current);
         model.addAttribute("id", id);
         Date date = new Date();
         lendListService.update3(serNum, date);
-        //更新图书存量
+        //更新图书存量  ==》 是否需要将库存数据增加1，是依据客户的的意愿
         BookInfo book = bookInfoService.getById(bookId);
         int number = book.getNumber() + 1;
         book.setNumber(number);
@@ -353,7 +425,15 @@ public class LendController {
         return "forward:/lend/toUpdateTwo";
     }
 
-    //图书归还操作
+    /**
+     * 图书归还操作
+     * @param id
+     * @param current
+     * @param serNum
+     * @param bookId
+     * @param model
+     * @return
+     */
     @RequestMapping("/updateFour")
     public String updateFour(int id, int current, int serNum, int bookId, Model model) {
         model.addAttribute("current", current);
@@ -369,7 +449,14 @@ public class LendController {
         return "forward:/lend/selectSome";
     }
 
-    //图书续借操作
+    /**
+     * 图书续借操作
+     * @param id
+     * @param current
+     * @param serNum
+     * @param model
+     * @return
+     */
     @RequestMapping("/updateFive")
     public String updateFive(int id, int current, int serNum, Model model) {
         model.addAttribute("current", current);

@@ -24,10 +24,25 @@ public interface LendListService extends IService<LendList> {
 
     List<LendList> selectByReader(int id);
 
+    /**
+     * 根据用户id进行查询，返回已还、已赔偿的图书借阅信息
+     * @param id
+     * @return
+     */
     List<LendList> selectByReader2(int id);
 
+    /**
+     * 更新借阅记录的丢失状态为1（丢失），将丢失时间更新为date
+     * @param serNum
+     * @param date
+     */
     void update1(int serNum, Date date);
 
+    /**
+     * 根据用户id进行查询，返回未还并且挂失的图书借阅信息
+     * @param id
+     * @return
+     */
     List<LendList> selectByReader3(int id);
 
     void update2(int serNum);
@@ -38,6 +53,11 @@ public interface LendListService extends IService<LendList> {
 
     Date getDate(int serNum);
 
+    /**
+     * 更新归还日期
+     * @param serNum
+     * @param date1
+     */
     void updateDate(int serNum, Date date1);
 
     void updateFlag(int serNum);
