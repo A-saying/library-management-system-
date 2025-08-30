@@ -14,7 +14,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName(value ="lend_list")
 @Data
 public class LendList implements Serializable {
-    @TableId(value = "ser_num")
     private Integer serNum;
     private int bookId;
     private int readerId;

@@ -207,12 +207,14 @@
                             </tr>
                             </thead>
                             <tbody>
+                            <!-- each 表示 循环， 定义一个 lend 用来表示 page.records 中拿出来的每一条数据-->
                                 <tr th:each="lend : ${page.records}">
                                     <td th:text="${lend.bookInfo.name}"></td>
                                     <td th:text="${lend.bookInfo.author}"></td>
                                     <td th:text="${lend.bookInfo.publish}"></td>
                                     <td th:text="${lend.bookInfo.language}"></td>
                                     <td th:text="${lend.bookInfo.price}"></td>
+<!--                                    通过 dates.format方法 将 lend.lendDate 日期格式化成 年月日的格式-->
                                     <td th:text="${#dates.format(lend.lendDate , 'yyyy-MM-dd')}"></td>
                                     <td th:text="${#dates.format(lend.lossDate , 'yyyy-MM-dd')}"></td>
                                     <td>

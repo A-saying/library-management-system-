@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mc.libmanagement.reporsitory.domain.LendList;
 import com.mc.libmanagement.reporsitory.service.LendListService;
 import com.mc.libmanagement.reporsitory.mapper.LendListMapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -7,7 +7,6 @@ import com.mc.libmanagement.reporsitory.domain.User;
 import com.mc.libmanagement.reporsitory.service.BookInfoService;
 import com.mc.libmanagement.reporsitory.service.LendListService;
 import com.mc.libmanagement.reporsitory.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -90,7 +89,7 @@ public class LendController {
         // 5,6,7,8,9
         // 10
         // currId 是 currentId的缩写，是当前页的记录的开始的id
-        int currId = (current - 1) * 5;
+        int currId = current == 0 ? 0 : (current - 1) * 5;
 
         // 获取当前日期
         Date date1 = new Date();
@@ -162,7 +161,7 @@ public class LendController {
         }
         //计算当前页第一条数据的下标, 最小是从0开始
         // 为什么是从0开始？因为计算机都是二进制 0/1  一个字节：0、1， 两个字节：00、01、10、11
-        int currId = (current - 1) * 5;
+        int currId = current == 0 ? 0 : (current - 1) * 5;
 
         // 创建一个List,作为当前页返回结果的集合
         List<LendList> pageList = new ArrayList<>();
@@ -303,7 +302,7 @@ public class LendController {
             current = pages;
         }
         //计算当前页第一条数据的下标
-        int currId = (current - 1) * 5;
+        int currId = current == 0 ? 0 : (current - 1) * 5;
 
         List<LendList> pageList = new ArrayList<>();
 
@@ -348,21 +347,27 @@ public class LendController {
         return "forward:/lend/toUpdateOne";
     }
 
-    /***
-     * 图书解挂页面
-     *
+    /**
+     * 跳转到 图书解挂页面
+     * @param id
+     * @param current
+     * @param model
+     * @return
      */
     @RequestMapping("/toUpdateTwo")
     public String toUpdateTwo(int id, int current, Model model) {
         User user = userService.getById(id);
         model.addAttribute("user", user);
 
+        // 根据用户id 查询 未还并且已经挂失的图书借阅信息
         List<LendList> lendList = lendListService.selectByReader3(id);
 
+        // 新建一个page对象，设置当前页码和每页显示的条数  ==> 此处是用来作为承载返回数据的 page对象
         Page<LendList> page = new Page<>(current, 5);
         //总数据数
         int count = lendList.size();
         //总页数
+        // % 取余 / 除 7 / 5 = 1  7 % 5 = 2  1 * 5 + 2 = 7
         int pages = count % 5 == 0 ? count / 5 : count / 5 + 1;
         //让页码保持在合理范围
         if (current <= 0) {
@@ -372,18 +377,47 @@ public class LendController {
             current = pages;
         }
         //计算当前页第一条数据的下标
-        int currId = (current - 1) * 5;
-
+        int currId = current == 0 ? 0 : (current - 1) * 5;
+        /**
+         * List 列表 接口类 ==》 不是一个可以直接new的类，不可以实例为对象
+         * eg: 人 接口类 ，人有子类：男、女, 学生、老师.... 只有具体的类别才能够实例化成对象（new）
+         * 继承 / 实现
+         * Person 抽象类 Student 继承了 Person
+         * Student mc =  new Student();
+         * Person mc = new Student();
+         */
         List<LendList> pageList = new ArrayList<>();
+        // 通过循环 将查询页的数据 放到 pageList（页面数据集合） 中，
         for (int i = 0; i < 5 && i < count - currId; i++) {
+            // i 表示 当前页 的第i个数据（从0开始）
+            // currId + i 表示 当前数据在 总数据列表的下标
             pageList.add(lendList.get(currId + i));
         }
+
+//        循环的多种写法
+//        for (int i = 0; i < pageList.size(); i++) {
+//            // xxx
+//        }
+
+//        for (LendList lend : pageList) {
+//
+//        }
+
+//        pageList.forEach(p -> {
+//            int bookId = p.getBookId();
+//        });
+
+        // 在page返回对象中 补充 需要给到前端的数据
         page.setSize(5);
+        // 当前页码
         page.setCurrent(current);
+        // 总数据数
         page.setTotal(count);
-        //计算分页总页数
+        // 分页总页数
         page.setPages(pages);
+        // 当前页的记录
         page.setRecords(pageList);
+
 
         model.addAttribute("page", page);
         return "html/reader/reader_jiegua_books";
@@ -397,6 +431,9 @@ public class LendController {
         model.addAttribute("current", current);
         model.addAttribute("id", id);
 
+        /**
+         * 解挂
+         */
         lendListService.update2(serNum);
         return "forward:/lend/toUpdateTwo";
     }

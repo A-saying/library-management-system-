@@ -3,6 +3,7 @@ package com.mc.libmanagement.reporsitory.mapper;
 import com.mc.libmanagement.reporsitory.domain.LendList;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -25,19 +26,30 @@ public interface LendListMapper extends BaseMapper<LendList> {
      */
     List<LendList> selectByReader2(int id);
 
-    void update1(int serNum, Date date);
+    void update1(@Param("serNum")int serNum, @Param("date")Date date);
 
     List<LendList> selectByReader3(int id);
 
+    /**
+     * 更新借阅记录为解挂 loss_flag = 0, loss_date = null
+     * @param serNum
+     */
     void update2(int serNum);
 
-    void update3(int serNum, Date date);
+    void update3(@Param("serNum")int serNum, @Param("date")Date date);
 
-    void update4(int serNum, Date date);
+    /**
+     * @Param("serNum") 和 @Param("date") 是为了告诉mybatis，参数的名称是什么，即在sql语句中怎么识别参数
+     * 如果方法中有多个参数，则需要加这个注解
+     * 如果方法中只有一个参数，则不需要加
+     * @param serNum
+     * @param date
+     */
+    void update4(@Param("serNum")int serNum, @Param("date")Date date);
 
     Date getDate(int serNum);
 
-    void updateDate(int serNum, Date date1);
+    void updateDate(@Param("serNum")int serNum, @Param("date1")Date date1);
 
     void updateFlag(int serNum);
 
@@ -49,7 +61,7 @@ public interface LendListMapper extends BaseMapper<LendList> {
 
     List<LendList> select3(String y);
 
-    List<LendList> select4(int x, String y);
+    List<LendList> select4(@Param("x")int x, @Param("y")String y);
 
     void updateOne(int serNum);
 }
