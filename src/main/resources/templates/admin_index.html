@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="../static/css/main.css">
     <link rel="stylesheet" href="../static/css/themes.css">
     <link rel="stylesheet" href="../css/css1/index/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script type="text/javascript" src="../css/css1/index/jquery.js"></script>
     <script type="text/javascript" src="../css/css1/index/js/bootstrap.js"></script>
     <style>
@@ -30,6 +31,142 @@
 
         .tab-pane.active{
             margin-top: 0px;
+        }
+
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+        }
+
+        .welcome-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: fadeInDown 1s ease;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.5rem;
+            color: #3498db;
+            margin-bottom: 50px;
+            max-width: 700px;
+            line-height: 1.6;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 30px;
+            animation: fadeIn 1s ease 0.6s both;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            width: 220px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .feature-desc {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            line-height: 1.5;
+        }
+
+        .welcome-footer {
+            margin-top: 50px;
+            color: #7f8c8d;
+            font-size: 1rem;
+            animation: fadeIn 1s ease 0.9s both;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .feature-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .feature-card-link:hover .feature-card {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
     </style>
     <script src="../static/js/vendor/modernizr-3.3.1.min.js"></script>
@@ -93,7 +230,7 @@
                 </div>
                 <!-- END Sidebar Content -->
             </div>
-                    <!-- END Wrapper for scrolling functionality -->
+            <!-- END Wrapper for scrolling functionality -->
             <!-- Sidebar Extra Info -->
             <div id="sidebar-extra-info" class="sidebar-content sidebar-nav-mini-hide">
 
@@ -101,8 +238,7 @@
                     <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
                 </div>
                 <div class="text-center">
-                    <small>Crafted with <i class="fa fa-heart text-danger"></i> by <a href="#" target="_blank">在线图书管理系统</a></small><br>
-                    <small><span>2023-04</span> &copy; <a href="#">在线图书管理</a></small>
+                    <small><span>2025-09</span> &copy; <a href="#">在线图书管理</a></small>
                 </div>
             </div>
             <!-- END Sidebar Extra Info -->
@@ -143,12 +279,6 @@
                                 </a>
                             </li>
                             <li>
-                                <a th:href="@{/toLock(id=${user.id})}">
-                                    <i class="gi gi-lock fa-fw pull-right"></i>
-                                    锁屏
-                                </a>
-                            </li>
-                            <li>
                                 <a th:href="@{/}">
                                     <i class="fa fa-power-off fa-fw pull-right"></i>
                                     退出
@@ -164,78 +294,51 @@
 
 
             <!--main-->
-            <div style="background-color:#fff;width: auto;height: 720px;padding-top: 100px;" >
-                <div style="width: 1000px;height: 100%;margin:0 auto">
-                    <form>
-                        <fieldset>
-                            <legend><strong>在线图书管理系统</strong></legend>
-                            <div class="container" >
-                                在线图书管理系统将权限一分为二，分别是管理员权限和员工权限，接下来将为你展示两种权限所对应的功能。
-                                <fieldset>
-                                    <legend>管理员</legend>
-                                    <!--选项卡-->
-                                    <ul class="nav nav-tabs">
-                                        <li><a href="#pan1" data-toggle="tab">图书管理</a></li>
-                                        <li><a href="#pan2"  data-toggle="tab">用户管理</a></li>
-                                        <li><a href="#pan3"  data-toggle="tab">借还管理</a></li>
-                                        <li><a href="#pan4"  data-toggle="tab">修改密码</a></li>
-                                    </ul>
-                                    <!--面板-->
-                                    <div class="tab-content">
-                                        <div class="tab-pane active" id="pan1">
-                                            添加图书：书名、作者、出版社、ISBM、简介、价格、出版日期、分类、数量<br>
-                                            查询图书：根据书名或分类查询<br>
-                                            删除图书：点击删除按钮即可<br>
-                                            修改图书：点击修改按钮即进入修改界面
-                                        </div>
-                                        <div class="tab-pane" id="pan2">
-                                            添加用户：根据角色添加用户或者管理员<br>
-                                            用户管理：对存在的用户或管理员进行删除，修改，查询
-                                        </div>
-                                        <div class="tab-pane" id="pan3">
-                                            用户借还书自动添加信息，如果超过指定日期，会显示催还按钮
-                                        </div>
-                                        <div class="tab-pane" id="pan4">
-                                            对自己的登录密码进行修改，修改成功后退出系统到login页面
-                                        </div>
-                                    </div>
-                                </fieldset>
+            <div style="background-color:#fff;width: auto;height: 720px;">
+                <div class="welcome-container">
+                    <h1 class="welcome-title pulse">欢迎登录图书馆管理系统</h1>
+                    <p class="welcome-subtitle">
+                        高效管理图书资源，便捷处理借阅事务，全面掌控系统运行
+                    </p>
 
-
-                                <fieldset>
-                                    <legend>读者</legend>
-                                    <!--选项卡-->
-                                    <ul class="nav nav-tabs">
-                                        <li><a href="#pan5" data-toggle="tab">图书查询</a></li>
-                                        <li><a href="#pan6"  data-toggle="tab">个人信息</a></li>
-                                        <li><a href="#pan7"  data-toggle="tab">我的借还</a></li>
-                                        <li><a href="#pan8"  data-toggle="tab">图书挂失</a></li>
-                                        <li><a href="#pan9"  data-toggle="tab">修改密码</a></li>
-                                    </ul>
-                                    <!--面板-->
-                                    <div class="tab-content">
-                                        <div class="tab-pane active" id="pan5">
-                                            根据书名或者分类进行查询
-                                        </div>
-                                        <div class="tab-pane" id="pan6">
-                                            查看个人详细信息：读者号、姓名、用户名、性别、生日、地址、电话、角色
-                                        </div>
-                                        <div class="tab-pane" id="pan7">
-                                            我想还书：显示所有未还图书以及图书状态，如果图书超期或者到应还日期前15天，才能进行续借<br>
-                                            借还记录：显示所有已还图书和用户丢失图书进行赔偿的图书借还日志
-                                        </div>
-                                        <div class="tab-pane" id="pan8">
-                                            挂失：显示读者所有未还图书，附带挂失按钮，点击挂失
-                                            解挂：解挂 赔偿
-                                        </div>
-                                        <div class="tab-pane" id="pan9">
-                                            对自己的登录密码进行修改，修改成功后退出系统到login页面
-                                        </div>
-                                    </div>
-                                </fieldset>
+                    <div class="features">
+                        <!-- 图书管理卡片 -->
+                        <a th:href="@{/book/selectAll(current=1,id=${user.id})}" class="feature-card-link">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <h3 class="feature-title">图书管理</h3>
+                                <p class="feature-desc">管理图书馆藏，包括添加、修改、删除图书</p>
                             </div>
-                        </fieldset>
-                    </form>
+                        </a>
+
+                        <!-- 人员管理卡片 -->
+                        <a th:href="@{/user/selectAll(uid=${user.id},current=1)}" class="feature-card-link">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h3 class="feature-title">人员管理</h3>
+                                <p class="feature-desc">管理系统用户，包括读者和管理员</p>
+                            </div>
+                        </a>
+
+                        <!-- 借还管理卡片 -->
+                        <a th:href="@{/lend/select1(id=${user.id},current=1)}" class="feature-card-link">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <h3 class="feature-title">借还管理</h3>
+                                <p class="feature-desc">处理图书借阅、归还以及逾期催还</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="welcome-footer">
+                        <p>© 2025 图书馆管理系统 | 让管理更高效</p>
+                    </div>
                 </div>
             </div>
 

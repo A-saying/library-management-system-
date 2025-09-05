@@ -100,29 +100,33 @@ public class LoginController {
         }
     }
 
-    //跳转到锁屏
-    @RequestMapping("/toLock")
-    public String toLock(int id, Model model) {
-        User user = userService.getById(id);
-        model.addAttribute("user", user);
-        return "lock";
-    }
-
-    //解锁
-    @RequestMapping("/lock")
-    public String lock(int id, String password, Model model) {
-        // 通过id查询信息
-        User user = userService.getById(id);
-        model.addAttribute("user", user);
-        // 没有进行user == null 的校验，因为id已经存在了系统中，说明账号一定存在
-        // 只需要判断密码是否一致
-        if (user.getPassword().equals(password)) {
-            return user.getFlag() == 0 ? "admin_index" : "reader_index";
-        } else {
-            // 密码输入错误，跳转回到锁屏页面
-            model.addAttribute("msg", "密码输入错误，请重试!");
-            return "lock";
-        }
-    }
+//    //跳转到锁屏
+//    @RequestMapping("/toLock")
+//    public String toLock(int id, Model model, HttpServletRequest request) {
+//        User user = userService.getById(id);
+//        model.addAttribute("user", user);
+//        // 上锁成功，把用户上锁信息保存到session中，作为上锁的标识,用于拦截器的校验
+//        request.getSession().setAttribute("lockFlag", true);
+//        return "lock";
+//    }
+//
+//    //解锁
+//    @RequestMapping("/lock")
+//    public String lock(int id, String password, Model model, HttpServletRequest request) {
+//        // 通过id查询信息
+//        User user = userService.getById(id);
+//        model.addAttribute("user", user);
+//        // 没有进行user == null 的校验，因为id已经存在了系统中，说明账号一定存在
+//        // 只需要判断密码是否一致
+//        if (user.getPassword().equals(password)) {
+//            // 解锁成功，把上锁表示去除
+//            request.getSession().removeAttribute("lockFlag");
+//            return user.getFlag() == 0 ? "admin_index" : "reader_index";
+//        } else {
+//            // 密码输入错误，跳转回到锁屏页面
+//            model.addAttribute("msg", "密码输入错误，请重试!");
+//            return "lock";
+//        }
+//    }
 
 }
