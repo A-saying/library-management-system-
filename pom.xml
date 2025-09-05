@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mc</groupId>
     <artifactId>library-management-system</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>library-management-system</name>
     <description>library-management-system</description>
     <properties>
@@ -94,7 +94,6 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.mc.libmanagement.LibraryManagementSystemApplication</mainClass>
-                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <execution>
