@@ -384,7 +384,8 @@ public class LendController {
          * 继承 / 实现
          * Person 抽象类 Student 继承了 Person
          * Student mc =  new Student();
-         * Person mc = new Student();
+         * Person mc = new Student();  √
+         * Student mc = new Person();  ×
          */
         List<LendList> pageList = new ArrayList<>();
         // 通过循环 将查询页的数据 放到 pageList（页面数据集合） 中，
@@ -400,11 +401,11 @@ public class LendController {
 //        }
 
 //        for (LendList lend : pageList) {
-//
+//             int bookId = lend.getBookId();
 //        }
 
-//        pageList.forEach(p -> {
-//            int bookId = p.getBookId();
+//        pageList.forEach(lend -> {
+//            int bookId = lend.getBookId();
 //        });
 
         // 在page返回对象中 补充 需要给到前端的数据

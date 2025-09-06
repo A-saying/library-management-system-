@@ -4,6 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mc</groupId>
     <artifactId>library-management-system</artifactId>
+<!--    version 在完成代码开发后，会使用1.0.0等版本号，
+进行一个小升级，会在后面两个数字上进行增加，如1.0.1
+如果完成一次大升级后，会在第一个数字上加一 如 2.0.0
+如果是日常开发，则使用SNAPSHOT，如1.0.0-SNAPSHOT
+比如 现在的版本是1.0.0,想要一次大升级，在开发过程中 ，版本号2.0.0-SNAPSHOT
+-->
     <version>1.0.0</version>
     <name>library-management-system</name>
     <description>library-management-system</description>
@@ -80,9 +86,14 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <!--  java是一个高级语言（越高级，和人的语言越相近）
+                 高级语言有个通信，需要编译，因为计算机只认识二进制
+                 -->
+<!--                maven 编译 插件-->
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
+<!--                    编译 -->
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
@@ -93,6 +104,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
+<!--                    这个配置是为了告知编译插件，这个系统的主类是哪一个，会识别主类中的main方法，作为系统的启动方法-->
                     <mainClass>com.mc.libmanagement.LibraryManagementSystemApplication</mainClass>
                 </configuration>
                 <executions>
